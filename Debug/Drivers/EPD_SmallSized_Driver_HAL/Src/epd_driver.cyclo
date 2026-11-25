@@ -1,0 +1,10 @@
+../Drivers/EPD_SmallSized_Driver_HAL/Src/epd_driver.c:52:6:initializeGlobalUpdateCOG	2
+../Drivers/EPD_SmallSized_Driver_HAL/Src/epd_driver.c:76:6:initializeFastUpdateCOG	2
+../Drivers/EPD_SmallSized_Driver_HAL/Src/epd_driver.c:104:6:globalUpdateDisplay	2
+../Drivers/EPD_SmallSized_Driver_HAL/Src/epd_driver.c:115:6:fastUpdateDisplay	14
+../Drivers/EPD_SmallSized_Driver_HAL/Src/epd_driver.c:138:6:fastUpdateDisplay_blit	14
+../Drivers/EPD_SmallSized_Driver_HAL/Src/epd_driver.c:164:6:powerOffCOG	3
+../Drivers/EPD_SmallSized_Driver_HAL/Src/epd_driver.c:181:13:powerOnCOG	2
+../Drivers/EPD_SmallSized_Driver_HAL/Src/epd_driver.c:203:6:transmitData	2
+../Drivers/EPD_SmallSized_Driver_HAL/Src/epd_driver.c:230:13:updateCOG	4
+../Drivers/EPD_SmallSized_Driver_HAL/Src/epd_driver.c:241:6:update_frame_buff	7

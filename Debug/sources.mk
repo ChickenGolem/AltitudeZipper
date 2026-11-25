@@ -24,5 +24,6 @@ C_DEPS :=
 SUBDIRS := \
 Core/Src \
 Core/Startup \
+Drivers/EPD_SmallSized_Driver_HAL/Src \
 Drivers/STM32U0xx_HAL_Driver/Src \
 

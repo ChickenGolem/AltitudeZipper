@@ -5,6 +5,8 @@
 "./Core/Src/sysmem.o"
 "./Core/Src/system_stm32u0xx.o"
 "./Core/Startup/startup_stm32u031r8tx.o"
+"./Drivers/EPD_SmallSized_Driver_HAL/Src/epd_driver.o"
+"./Drivers/EPD_SmallSized_Driver_HAL/Src/zipper_screen.o"
 "./Drivers/STM32U0xx_HAL_Driver/Src/stm32u0xx_hal.o"
 "./Drivers/STM32U0xx_HAL_Driver/Src/stm32u0xx_hal_cortex.o"
 "./Drivers/STM32U0xx_HAL_Driver/Src/stm32u0xx_hal_dma.o"

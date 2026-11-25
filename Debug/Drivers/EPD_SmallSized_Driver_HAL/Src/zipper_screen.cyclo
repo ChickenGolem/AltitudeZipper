@@ -1,0 +1,4 @@
+../Drivers/EPD_SmallSized_Driver_HAL/Src/zipper_screen.c:39:6:initialize_screen	1
+../Drivers/EPD_SmallSized_Driver_HAL/Src/zipper_screen.c:67:6:global_update	1
+../Drivers/EPD_SmallSized_Driver_HAL/Src/zipper_screen.c:73:6:seal	1
+../Drivers/EPD_SmallSized_Driver_HAL/Src/zipper_screen.c:79:6:write_zero	1

@@ -21,12 +21,16 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+//#include "epd_driver.h"
+//#include "epd_screens.h"
+#include "zipper_screen.h"
+//#include "../../Images/fastupdate_src/FuPu_Data.h"
+//#include "../../Images/globalupdate_src/demoImageData.h"
 
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -41,10 +45,9 @@
 
 /* Private variables ---------------------------------------------------------*/
 
-SPI_HandleTypeDef hspi1;
 
 /* USER CODE BEGIN PV */
-
+SPI_HandleTypeDef hspi1;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -77,7 +80,7 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-
+  HAL_GPIO_WritePin(V_ctrl_GPIO_Port, V_ctrl_Pin, GPIO_PIN_SET);
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -91,7 +94,43 @@ int main(void)
   MX_GPIO_Init();
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
+/*
+  ePaperDisplay_t epd;
+  epd.spi = &hspi1;
 
+  // CubeMX pin and port constants
+  epd.panelBusy.pin = EPD_BUSY_Pin;
+  epd.panelBusy.port = EPD_BUSY_GPIO_Port;
+  epd.panelCS.pin = EPD_CS_Pin;
+  epd.panelCS.port = EPD_CS_GPIO_Port;
+  epd.panelDC.pin = EPD_DC_Pin;
+  epd.panelDC.port = EPD_DC_GPIO_Port;
+  epd.panelReset.pin = EPD_RST_Pin;
+  epd.panelReset.port = EPD_RST_GPIO_Port;
+
+  // EPD type and PSR constants for each screen
+  epd.epdType = EPD_DISPLAY_097;
+  epd.displaySizeH = EPD_DISPLAY_097_SIZE_H;
+  epd.displaySizeV = EPD_DISPLAY_097_SIZE_V;
+
+  epd.epdPSR[0] = EPD_DISPLAY_097_PSR0;
+  epd.epdPSR[1] = EPD_DISPLAY_097_PSR1;
+
+
+  initializeGlobalUpdateCOG(&epd);
+  globalUpdateDisplay(&epd, BW_0x00Buffer, BW_0x00Buffer);
+  powerOffCOG(&epd);
+
+  initializeFastUpdateCOG(&epd);
+  fastUpdateDisplay(&epd, FastPic_w, Shehzad_Lord);
+  HAL_Delay(2000);
+  fastUpdateDisplay(&epd, Shehzad_Lord, Fast_canvas);
+  fastUpdateDisplay(&epd, Fast_canvas, SEALOFAPPROVAL);
+  powerOffCOG(&epd);
+*/
+  initialize_screen(&hspi1);
+  write_zero();
+  //seal();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -99,10 +138,6 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-	  HAL_GPIO_WritePin(User_LED_GPIO_Port, User_LED_Pin, GPIO_PIN_SET);
-	  HAL_Delay(1000);
-	  HAL_GPIO_WritePin(User_LED_GPIO_Port, User_LED_Pin, GPIO_PIN_RESET);
-	  HAL_Delay(1000);
 
     /* USER CODE BEGIN 3 */
   }
@@ -166,8 +201,8 @@ static void MX_SPI1_Init(void)
   /* SPI1 parameter configuration*/
   hspi1.Instance = SPI1;
   hspi1.Init.Mode = SPI_MODE_MASTER;
-  hspi1.Init.Direction = SPI_DIRECTION_2LINES;
-  hspi1.Init.DataSize = SPI_DATASIZE_4BIT;
+  hspi1.Init.Direction = SPI_DIRECTION_1LINE;
+  hspi1.Init.DataSize = SPI_DATASIZE_8BIT;
   hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
   hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
   hspi1.Init.NSS = SPI_NSS_SOFT;
@@ -202,16 +237,40 @@ static void MX_GPIO_Init(void)
 
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(User_LED_GPIO_Port, User_LED_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(V_ctrl_GPIO_Port, V_ctrl_Pin, GPIO_PIN_SET);
 
-  /*Configure GPIO pin : User_LED_Pin */
-  GPIO_InitStruct.Pin = User_LED_Pin;
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOB, EPD_RST_Pin|EPD_DC_Pin|EPD_CS_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin : V_ctrl_Pin */
+  GPIO_InitStruct.Pin = V_ctrl_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(V_ctrl_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : EPD_RST_Pin EPD_DC_Pin */
+  GPIO_InitStruct.Pin = EPD_RST_Pin|EPD_DC_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(User_LED_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : EPD_BUSY_Pin */
+  GPIO_InitStruct.Pin = EPD_BUSY_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(EPD_BUSY_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : EPD_CS_Pin */
+  GPIO_InitStruct.Pin = EPD_CS_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+  HAL_GPIO_Init(EPD_CS_GPIO_Port, &GPIO_InitStruct);
 
   /* USER CODE BEGIN MX_GPIO_Init_2 */
 
