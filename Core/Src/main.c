@@ -21,11 +21,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-//#include "epd_driver.h"
-//#include "epd_screens.h"
 #include "zipper_screen.h"
-//#include "../../Images/fastupdate_src/FuPu_Data.h"
-//#include "../../Images/globalupdate_src/demoImageData.h"
+#include <stdbool.h>
 
 /* USER CODE END Includes */
 
@@ -94,43 +91,15 @@ int main(void)
   MX_GPIO_Init();
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
-/*
-  ePaperDisplay_t epd;
-  epd.spi = &hspi1;
 
-  // CubeMX pin and port constants
-  epd.panelBusy.pin = EPD_BUSY_Pin;
-  epd.panelBusy.port = EPD_BUSY_GPIO_Port;
-  epd.panelCS.pin = EPD_CS_Pin;
-  epd.panelCS.port = EPD_CS_GPIO_Port;
-  epd.panelDC.pin = EPD_DC_Pin;
-  epd.panelDC.port = EPD_DC_GPIO_Port;
-  epd.panelReset.pin = EPD_RST_Pin;
-  epd.panelReset.port = EPD_RST_GPIO_Port;
-
-  // EPD type and PSR constants for each screen
-  epd.epdType = EPD_DISPLAY_097;
-  epd.displaySizeH = EPD_DISPLAY_097_SIZE_H;
-  epd.displaySizeV = EPD_DISPLAY_097_SIZE_V;
-
-  epd.epdPSR[0] = EPD_DISPLAY_097_PSR0;
-  epd.epdPSR[1] = EPD_DISPLAY_097_PSR1;
-
-
-  initializeGlobalUpdateCOG(&epd);
-  globalUpdateDisplay(&epd, BW_0x00Buffer, BW_0x00Buffer);
-  powerOffCOG(&epd);
-
-  initializeFastUpdateCOG(&epd);
-  fastUpdateDisplay(&epd, FastPic_w, Shehzad_Lord);
-  HAL_Delay(2000);
-  fastUpdateDisplay(&epd, Shehzad_Lord, Fast_canvas);
-  fastUpdateDisplay(&epd, Fast_canvas, SEALOFAPPROVAL);
-  powerOffCOG(&epd);
-*/
   initialize_screen(&hspi1);
-  write_zero();
-  //seal();
+  write_main_alt(7228, true);
+
+  for(int i = 100; i < 105; i++)
+  {
+	  write_main_alt(i, false);
+  }
+  seal();
   /* USER CODE END 2 */
 
   /* Infinite loop */

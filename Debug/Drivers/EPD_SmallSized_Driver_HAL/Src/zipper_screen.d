@@ -36,7 +36,7 @@ Drivers/EPD_SmallSized_Driver_HAL/Src/zipper_screen.o: \
  ../Core/Inc/../../Images/globalupdate_src/demoImageData.h \
  ../Core/Inc/../../Images/globalupdate_src/97_1.c \
  ../Core/Inc/../../Images/Fonts/MainAltitude/MainAltitudeFont.h \
- ../Core/Inc/../../Images/Fonts/MainAltitude/MainAltitudeFont.c
+ ../Core/Inc/../../Images/Fonts/MainAltitude/MainaltitudeFont.c
 ../Drivers/EPD_SmallSized_Driver_HAL/Inc/zipper_screen.h:
 ../Drivers/EPD_SmallSized_Driver_HAL/Inc/epd_driver.h:
 ../Core/Inc/main.h:
@@ -74,4 +74,4 @@ Drivers/EPD_SmallSized_Driver_HAL/Src/zipper_screen.o: \
 ../Core/Inc/../../Images/globalupdate_src/demoImageData.h:
 ../Core/Inc/../../Images/globalupdate_src/97_1.c:
 ../Core/Inc/../../Images/Fonts/MainAltitude/MainAltitudeFont.h:
-../Core/Inc/../../Images/Fonts/MainAltitude/MainAltitudeFont.c:
+../Core/Inc/../../Images/Fonts/MainAltitude/MainaltitudeFont.c:

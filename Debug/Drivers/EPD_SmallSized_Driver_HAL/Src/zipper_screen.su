@@ -1,4 +1,4 @@
-../Drivers/EPD_SmallSized_Driver_HAL/Src/zipper_screen.c:39:6:initialize_screen	16	static
-../Drivers/EPD_SmallSized_Driver_HAL/Src/zipper_screen.c:67:6:global_update	8	static
-../Drivers/EPD_SmallSized_Driver_HAL/Src/zipper_screen.c:73:6:seal	8	static
-../Drivers/EPD_SmallSized_Driver_HAL/Src/zipper_screen.c:79:6:write_zero	24	static
+../Drivers/EPD_SmallSized_Driver_HAL/Src/zipper_screen.c:70:6:initialize_screen	16	static
+../Drivers/EPD_SmallSized_Driver_HAL/Src/zipper_screen.c:98:6:global_update	8	static
+../Drivers/EPD_SmallSized_Driver_HAL/Src/zipper_screen.c:104:6:seal	8	static
+../Drivers/EPD_SmallSized_Driver_HAL/Src/zipper_screen.c:113:6:write_main_alt	64	static
