@@ -17,3 +17,4 @@
 #define MainAltitude_footSymbol     (const uint8_t *) & FootSymbmainA
 #define MainAltitude_meterSymbol     (const uint8_t *) & MetermainA
 #define MainAltitude_negativeSymbol     (const uint8_t *) & negmainA
+#define MainAltitude_degreeSymbol     (const uint8_t *) & negmainA
