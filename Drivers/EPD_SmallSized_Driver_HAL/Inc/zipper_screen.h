@@ -30,5 +30,6 @@ void global_update();
 void power_off_cog();
 void seal();
 void write_main_alt(int32_t altitude, bool refresh_alt);
+void write_sub_alt(int32_t sub_altitude, bool refresh_sub_alt);
 
 

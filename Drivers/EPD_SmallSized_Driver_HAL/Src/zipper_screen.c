@@ -9,6 +9,7 @@ Created by Isaac Rounds
 #include "../../Images/fastupdate_src/FuPu_Data.h"
 #include "../../Images/globalupdate_src/demoImageData.h"
 #include "../../Images/Fonts/MainAltitude/MainAltitudeFont.h"
+#include "../../Images/Fonts/MaximumAltitude/MaximumAltitude.h"
 /* ---- Enums/Declares ---- */
 
 #define EPD_WIDTH   200
@@ -69,6 +70,37 @@ const uint8_t * const MainAltitude_digits[10] = {
     MainAltitude_9mainA,
 };
 
+const uint8_t * const SubAltitude_digits[10] = {
+	_0SubA,
+	_1SubA,
+	_2SubA,
+	_3SubA,
+	_4SubA,
+	_5SubA,
+	_6SubA,
+	_7SubA,
+	_8SubA,
+	_9SubA	
+};
+
+/* ---- Global variables---- */
+
+struct font_package_t SubAltitude_font = {
+	.height_px = 14,
+	.width_px = 14,
+	.meter_symbol_height_px = 1,
+	.meter_symbol_width_px = 1,
+	.meter_bmp = SubAltitude_meterSymbol,
+	.foot_symbol_height_px = 1,
+	.foot_symbol_width_px = 1,
+	.foot_bmp = SubAltitude_footSymbol,
+	.degree_symbol_height_px = 3,
+	.degree_symbol_width_px = 5,
+	.degree_bmp = SubAltitude_degreeSymbol, // this actually links to junk, not used
+	.negative_bmp = SubAltitude_negativeSymbol,
+	.font_link_list = SubAltitude_digits
+};
+
 struct font_package_t MainAltitude_font = {
 	.height_px = 30,
 	.width_px = 35,
@@ -85,7 +117,6 @@ struct font_package_t MainAltitude_font = {
 	.font_link_list = MainAltitude_digits
 };
 
-/* ---- Global variables---- */
 struct screen_state_t screen_state = {
 	.altitude = 0,
 	.max_altitude = 0,
@@ -93,7 +124,7 @@ struct screen_state_t screen_state = {
 	.max_temperature = 0,
 	.min_temperature = 0,
 	.writes_since_global_refresh = 0,
-	.is_imperial = false
+	.is_imperial = true
 };
 uint8_t frameBuf[EPD_BUF_SIZE] = {0};
 ePaperDisplay_t epd;
@@ -151,14 +182,46 @@ void write_main_alt(int32_t altitude, bool refresh_alt)
 {
 	struct write_data main_alt_write_data = {
 		.font_package = MainAltitude_font,
-		.char_0_h_cord = screen_state.is_imperial ? 25 : 30,
-		.char_0_w_cord = 3,
+		.char_0_h_cord = screen_state.is_imperial ? 45 : 50,
+		.char_0_w_cord =5,
 		.unit_is_temp = false,
 		.value_to_write = altitude,
 		.old_value = screen_state.altitude
 	};
 	write_over_value(main_alt_write_data, refresh_alt);
 	screen_state.altitude = altitude;
+}
+
+void write_sub_alt(int32_t sub_altitude, bool refresh_sub_alt)
+{
+	
+	//x and y cords to place the top 'left' (screen direction) of x
+	uint8_t max_x = 44;
+	uint8_t max_y = 118;
+	uint8_t max_height = 40; //length of the string 'Max'
+	uint8_t space_between_col_and_max = 7;
+
+	struct write_data sub_alt_write_data = {
+			.font_package = SubAltitude_font,
+			.char_0_h_cord = max_y - (5 * SubAltitude_font.width_px+(space_between_col_and_max*2)), //Needs work
+			.char_0_w_cord = max_x,
+			.unit_is_temp = false,
+			.value_to_write = sub_altitude,
+			.old_value = screen_state.max_altitude
+		};
+
+	//writes 'Max :' to screen
+	if (refresh_sub_alt)
+	{
+		initializeFastUpdateCOG(&epd);
+		fastUpdateDisplay_blit(&epd, frameBuf, BW_0x00Buffer, max_x, max_y, sub_alt_write_data.font_package.width_px, max_height);
+		fastUpdateDisplay_blit(&epd, frameBuf, Max_subA, max_x, max_y, sub_alt_write_data.font_package.width_px, max_height);
+		fastUpdateDisplay_blit(&epd, frameBuf, COLON_SubA, max_x+4, max_y - space_between_col_and_max, 10, 2);
+		powerOffCOG(&epd);
+	}
+
+	write_over_value(sub_alt_write_data, refresh_sub_alt);
+	screen_state.max_altitude = sub_altitude;
 }
 
 void write_over_value(struct write_data data, bool refresh)
