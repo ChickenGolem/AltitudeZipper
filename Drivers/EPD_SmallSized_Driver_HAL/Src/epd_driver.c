@@ -261,12 +261,12 @@ void update_frame_buff(ePaperDisplay_t *epd, uint8_t *frameBuf, const uint8_t *d
                 break;
             }
 
-            // 1. Read the pixel bit from digitBmp (MSB first: bit 7 is leftmost pixel)
+            // Read the pixel bit from digitBmp (MSB first: bit 7 is leftmost pixel)
             uint16_t bmp_byte_idx = (row * bmp_bytes_per_row) + (col / 8);
             uint8_t  bmp_bit_mask = 0x80 >> (col % 8);
             bool     pixel_on     = (digitBmp[bmp_byte_idx] & bmp_bit_mask) != 0;
 
-            // 2. Write that single bit into the corresponding byte of frameBuf
+            //Write that single bit into the corresponding byte of frameBuf
             uint16_t screen_byte_idx = (current_y * screen_bytes_per_row) + (current_x / 8);
             uint8_t  screen_bit_mask = 0x80 >> (current_x % 8);
 

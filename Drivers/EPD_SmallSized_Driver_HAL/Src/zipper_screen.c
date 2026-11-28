@@ -10,6 +10,7 @@ Created by Isaac Rounds
 #include "../../Images/globalupdate_src/demoImageData.h"
 #include "../../Images/Fonts/MainAltitude/MainAltitudeFont.h"
 #include "../../Images/Fonts/MaximumAltitude/MaximumAltitude.h"
+#include "../../Images/Fonts/MainTemp/MainTemp.h"
 /* ---- Enums/Declares ---- */
 
 #define EPD_WIDTH   200
@@ -83,7 +84,36 @@ const uint8_t * const SubAltitude_digits[10] = {
 	_9SubA	
 };
 
+const uint8_t * const MainTemp_digits[10] = {
+	MainTemp_0maintempA,
+	MainTemp_1maintempA,
+	MainTemp_2maintempA,
+	MainTemp_3maintempA,
+	MainTemp_4maintempA,
+	MainTemp_5maintempA,
+	MainTemp_6maintempA,
+	MainTemp_7maintempA,
+	MainTemp_8maintempA,
+	MainTemp_9maintempA
+};
+
 /* ---- Global variables---- */
+
+struct font_package_t MainTemp_font = {
+	.height_px = 25,
+	.width_px = 25,
+	.meter_symbol_height_px = 1,
+	.meter_symbol_width_px = 1,
+	.meter_bmp = MainTemp_negmaintempA,
+	.foot_symbol_height_px = 1,
+	.foot_symbol_width_px = 1,
+	.foot_bmp = MainTemp_negmaintempA,
+	.degree_symbol_height_px = 7,
+	.degree_symbol_width_px = 7,
+	.degree_bmp = MainTemp_DegSymmaintempA, 
+	.negative_bmp = MainTemp_negmaintempA,
+	.font_link_list = MainTemp_digits
+};
 
 struct font_package_t SubAltitude_font = {
 	.height_px = 14,
@@ -124,14 +154,14 @@ struct screen_state_t screen_state = {
 	.max_temperature = 0,
 	.min_temperature = 0,
 	.writes_since_global_refresh = 0,
-	.is_imperial = true
+	.is_imperial = false
 };
 uint8_t frameBuf[EPD_BUF_SIZE] = {0};
 ePaperDisplay_t epd;
 
 /* ---- Private Function Declares ---- */
 void update_frame_buff(const uint8_t *digitBmp, uint8_t x, uint8_t y, uint8_t bmp_width, uint8_t bmp_height);
-void write_over_value(struct write_data data, bool refresh);
+void write_over_value(struct write_data data, bool refresh, uint8_t max_num_digits);
 /* ---- Public Function Definitions ---- */
 
 void initialize_screen(SPI_HandleTypeDef *spi_handle)
@@ -182,14 +212,32 @@ void write_main_alt(int32_t altitude, bool refresh_alt)
 {
 	struct write_data main_alt_write_data = {
 		.font_package = MainAltitude_font,
-		.char_0_h_cord = screen_state.is_imperial ? 45 : 50,
+		.char_0_h_cord = screen_state.is_imperial ? 31 : 36,
 		.char_0_w_cord =5,
 		.unit_is_temp = false,
 		.value_to_write = altitude,
 		.old_value = screen_state.altitude
 	};
-	write_over_value(main_alt_write_data, refresh_alt);
+	write_over_value(main_alt_write_data, refresh_alt, 5);
 	screen_state.altitude = altitude;
+}
+
+void write_main_temp(int16_t temperature, bool refresh_temp)
+{
+	int8_t temp_x_cord = 70;
+	int8_t temp_y_cord = 120;
+
+	struct write_data main_temp_write_data = {
+		.font_package = MainTemp_font,
+		.char_0_h_cord = temp_y_cord,
+		.char_0_w_cord = temp_x_cord,
+		.unit_is_temp = true,
+		.value_to_write = temperature,
+		.old_value = screen_state.temperature
+	};
+
+	write_over_value(main_temp_write_data, refresh_temp, 3);
+	screen_state.temperature = temperature;
 }
 
 void write_sub_alt(int32_t sub_altitude, bool refresh_sub_alt)
@@ -220,11 +268,11 @@ void write_sub_alt(int32_t sub_altitude, bool refresh_sub_alt)
 		powerOffCOG(&epd);
 	}
 
-	write_over_value(sub_alt_write_data, refresh_sub_alt);
+	write_over_value(sub_alt_write_data, refresh_sub_alt, 5);
 	screen_state.max_altitude = sub_altitude;
 }
 
-void write_over_value(struct write_data data, bool refresh)
+void write_over_value(struct write_data data, bool refresh, uint8_t max_num_digits)
 {
 	if ((data.value_to_write < 0) != (data.old_value < 0))
 	{
@@ -236,15 +284,21 @@ void write_over_value(struct write_data data, bool refresh)
 	if (refresh)
 	{
 		// Clear full area
-		fastUpdateDisplay_blit(&epd, frameBuf, BW_0x00Buffer, data.char_0_w_cord, data.char_0_h_cord, data.font_package.width_px, data.font_package.height_px * 5);
-
-		if (screen_state.is_imperial) //(data.font_package.foot_symbol_width_px/2)
+		fastUpdateDisplay_blit(&epd, frameBuf, BW_0x00Buffer, data.char_0_w_cord, data.char_0_h_cord, data.font_package.width_px, data.font_package.height_px * max_num_digits);
+		if (data.unit_is_temp)
 		{
-			fastUpdateDisplay_blit(&epd, frameBuf, data.font_package.foot_bmp, data.char_0_w_cord - 5, data.char_0_h_cord - (data.font_package.foot_symbol_height_px/2), data.font_package.foot_symbol_width_px, data.font_package.foot_symbol_height_px);
+			fastUpdateDisplay_blit(&epd, frameBuf, data.font_package.degree_bmp, data.char_0_w_cord - 5, data.char_0_h_cord - (data.font_package.degree_symbol_height_px), data.font_package.degree_symbol_width_px, data.font_package.degree_symbol_height_px);
 		}
 		else
 		{
-			fastUpdateDisplay_blit(&epd, frameBuf, data.font_package.meter_bmp, data.char_0_w_cord + data.font_package.width_px - data.font_package.meter_symbol_width_px, data.char_0_h_cord - (data.font_package.meter_symbol_height_px), data.font_package.meter_symbol_width_px, data.font_package.meter_symbol_height_px);
+			if (screen_state.is_imperial) //(data.font_package.foot_symbol_width_px/2)
+			{
+				fastUpdateDisplay_blit(&epd, frameBuf, data.font_package.foot_bmp, data.char_0_w_cord - 5, data.char_0_h_cord - (data.font_package.foot_symbol_height_px/2), data.font_package.foot_symbol_width_px, data.font_package.foot_symbol_height_px);
+			}
+			else
+			{
+				fastUpdateDisplay_blit(&epd, frameBuf, data.font_package.meter_bmp, data.char_0_w_cord + data.font_package.width_px - data.font_package.meter_symbol_width_px, data.char_0_h_cord - (data.font_package.meter_symbol_height_px), data.font_package.meter_symbol_width_px, data.font_package.meter_symbol_height_px);
+			}
 		}
 	}
 
@@ -257,7 +311,7 @@ void write_over_value(struct write_data data, bool refresh)
 	bool old_minus_placed = false;
 	uint8_t position = 0;
 
-	while (position < 5)
+	while (position < max_num_digits)
 	{
 		uint16_t y =  data.char_0_h_cord + (data.font_package.height_px * position);
 
